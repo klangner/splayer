@@ -5,5 +5,5 @@ import Protocol.ParserSpec
 
 main :: IO ()
 main = hspec $ do
-  describe "Folder utilities" Protocol.ParserSpec.spec
+  describe "Message parser" Protocol.ParserSpec.spec
   
