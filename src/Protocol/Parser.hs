@@ -16,12 +16,21 @@ import Text.ParserCombinators.Parsec
 import Model.Types
 
 data ServerMessage = InitMessage Side UniformNumber PlayMode
+                   | ServerParam [(String, String)]
+                   | PlayerParam [(String, String)]
                    | Error String
                    deriving (Eq)
                    
 instance Show ServerMessage where
     show (InitMessage s unum mode) = "(init " ++ show s ++ " " ++ show unum ++ " " ++ show mode ++ ")" 
+    show (ServerParam xs) = "(server_param " ++ showParams xs ++ ")"
+    show (PlayerParam xs) = "(player_param " ++ showParams xs ++ ")"
     show (Error msg) = "(error " ++ msg ++ ")" 
+
+-- Show params
+showParams :: [(String, String)] -> String
+showParams [] = ""
+showParams ((k,v):xs) = "(" ++ k ++ " " ++ v ++ ")" ++ showParams xs
 
             
 -- | Parse server message                 
@@ -35,23 +44,53 @@ parseMessage msg = case parse allParsers "" msg of
 allParsers :: Parser ServerMessage
 allParsers = do
     _ <- char '('
-    initMsg <|> errorParser
+    initMsg <|> serverParamMsg <|> playerParamMsg <|> errorMsg
          
                  
--- | Parser for init message:
---  (init Side Unum PlayMode)
---  (error reason)                 
+-- Parser for init message:
+-- (init Side Unum PlayMode)
 initMsg :: Parser ServerMessage
 initMsg = do
-    _<- string "init"
-    _<- space
+    _ <- string "init"
+    _ <- space
     s <- side
-    _<- space
+    _ <- space
     unum <- number
-    _<- space
+    _ <- space
     mode <- playMode
     return $ InitMessage s unum mode
 
+
+-- Parser server params message
+-- (server_param (ParameterName ParameterValue)*) 
+serverParamMsg :: Parser ServerMessage
+serverParamMsg = do
+    _ <- string "server_param"
+    _ <- space
+    ps <- many1 param
+    return $ ServerParam ps
+
+
+-- Parser player params message
+-- (player_param (ParameterName ParameterValue)*) 
+playerParamMsg :: Parser ServerMessage
+playerParamMsg = do
+    _ <- string "player_param"
+    _ <- space
+    ps <- many1 param
+    return $ PlayerParam ps
+
+
+-- Parse error message    
+--  (error reason)                 
+errorMsg :: Parser ServerMessage
+errorMsg = do
+    _ <- string "error"
+    _ <- space
+    reason <- text
+    return $ Error reason    
+
+    
 -- Parse player side
 side :: Parser Side
 side = do
@@ -92,10 +131,14 @@ playMode = do
         "offside_r" -> Offside SRight
         m -> Unknown m
     
--- Parse error message    
-errorParser :: Parser ServerMessage
-errorParser = do
-    _ <- string "error"
+    
+-- Parse params "(key value)"    
+param :: Parser (String, String)
+param = do
+    _ <- char '('
+    k <- text
     _ <- space
-    reason <- text
-    return $ Error reason    
+    v <- text
+    _ <- char ')'
+    return (k,v)
+    
