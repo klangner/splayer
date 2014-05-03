@@ -4,6 +4,6 @@ import Protocol.ParserSpec
 
 
 main :: IO ()
-main = hspec $ do
+main = hspec $ 
   describe "Message parser" Protocol.ParserSpec.spec
   

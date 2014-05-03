@@ -13,12 +13,15 @@ module Protocol.Parser ( ServerMessage(..)
                        , parseMessage ) where
 
 import Text.ParserCombinators.Parsec
-import World.Types
+import Model.Types
 
 data ServerMessage = InitMessage Side UniformNumber PlayMode
                    | Error String
-                   deriving (Eq, Show)
-                 
+                   deriving (Eq)
+                   
+instance Show ServerMessage where
+    show (InitMessage s unum mode) = "(init " ++ show s ++ " " ++ show unum ++ " " ++ show mode ++ ")" 
+    show (Error msg) = "(error " ++ msg ++ ")" 
 
             
 -- | Parse server message                 
@@ -70,6 +73,23 @@ playMode = do
     mode <- text
     return $ case mode of
         "before_kick_off" -> BeforeKickOff
+        "play_on" -> PlayOn
+        "time_over" -> TimeOver
+        "kick_off_l" -> KickOff SLeft
+        "kick_off_r" -> KickOff SRight
+        "kick_in_l" -> KickIn SLeft
+        "kick_in_r" -> KickIn SRight
+        "free_kick_l" -> FreeKick SLeft
+        "free_kick_r" -> FreeKick SRight
+        "coner_kick_l" -> CornerKick SLeft
+        "coner_kick_r" -> CornerKick SRight
+        "goal_kick_l" -> GoalKick SLeft
+        "goal_kick_r" -> GoalKick SRight
+        "goal_l" -> Goal SLeft
+        "goal_r" -> Goal SRight
+        "drop_ball" -> DropBall
+        "offside_l" -> Offside SLeft
+        "offside_r" -> Offside SRight
         m -> Unknown m
     
 -- Parse error message    
