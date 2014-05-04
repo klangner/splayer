@@ -9,7 +9,7 @@ Portability : portable
 
 Parser for server messages.
 -}
-module Protocol.Parser ( ServerMessage(..)
+module Server.Protocol.Parser ( ServerMessage(..)
                        , parseMessage ) where
 
 import Text.ParserCombinators.Parsec
@@ -20,6 +20,9 @@ type Time = Int
 data ServerMessage = InitMessage Side UniformNumber PlayMode
                    | ServerParam [(String, String)]
                    | PlayerParam [(String, String)]
+                   | FullState Time
+                   | Hear Time
+                   | See Time
                    | SenseBody Time
                    | Error String
                    deriving (Eq)
@@ -28,6 +31,9 @@ instance Show ServerMessage where
     show (InitMessage s unum mode) = "(init " ++ show s ++ " " ++ show unum ++ " " ++ show mode ++ ")" 
     show (ServerParam xs) = "(server_param " ++ showParams xs ++ ")"
     show (PlayerParam xs) = "(player_param " ++ showParams xs ++ ")"
+    show (FullState t) = "(fullstate " ++ show t ++ ")"
+    show (Hear t) = "(hear " ++ show t ++ ")"
+    show (See t) = "(see " ++ show t ++ ")"
     show (SenseBody t) = "(sense_body " ++ show t ++ ")"
     show (Error msg) = "(error " ++ msg ++ ")" 
 

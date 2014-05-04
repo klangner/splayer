@@ -9,7 +9,7 @@ Portability : portable
 
 build messages which can be send from player to server
 -}
-module Protocol.Builder ( bye
+module Server.Protocol.Builder ( bye
                         , init
                         , reconnect ) where
 

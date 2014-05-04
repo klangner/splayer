@@ -1,9 +1,9 @@
-module Protocol.ParserSpec (spec) where
+module Server.Protocol.ParserSpec (spec) where
 
 import Test.Hspec
 import Test.QuickCheck
 import Model.Types
-import Protocol.Parser
+import Server.Protocol.Parser
 import Model.TypesArbitrary
 
 
