@@ -10,8 +10,8 @@ Portability : portable
 build messages which can be send from player to server
 -}
 module Server.Protocol.Builder ( bye
-                        , init
-                        , reconnect ) where
+                               , init
+                               , reconnect ) where
 
 import Prelude hiding(init)
 

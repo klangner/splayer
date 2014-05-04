@@ -1,9 +1,9 @@
 import Test.Hspec
 import Test.QuickCheck
-import Server.Protocol.ParserSpec
+import Specification.ProtocolSpec as ProtocolSpec
 
 
 main :: IO ()
 main = hspec $ 
-  describe "Message parser" Server.Protocol.ParserSpec.spec
+  describe "Protocol" ProtocolSpec.spec
   

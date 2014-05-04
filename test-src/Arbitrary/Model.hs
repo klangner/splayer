@@ -1,4 +1,4 @@
-module Model.TypesArbitrary where
+module Arbitrary.Model where
 
 import Model.Types
 import Test.QuickCheck

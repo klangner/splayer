@@ -1,15 +1,15 @@
-module Server.Protocol.ParserSpec (spec) where
+module Specification.ProtocolSpec (spec) where
 
 import Test.Hspec
 import Test.QuickCheck
 import Model.Types
 import Server.Protocol.Parser
-import Model.TypesArbitrary
+import Arbitrary.Model
 
 
 spec :: Spec
 spec = describe "message parser" $
-    it "parses all messages" $ property $
+    it "should parse all server messages" $ property $
         \x -> parseMessage (show x) == (x :: ServerMessage)
         
         
