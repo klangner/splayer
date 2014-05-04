@@ -1,10 +1,12 @@
 # Specification version 0.1
 
-## Model
+## Data structures
 
-* Player contains model which defines:
+### Model
+
+* Player model consists of:
   * Team name
-  * Is goalkeeper
+  * Player position
   * Uniform number
   * Functions which process:
     * **init** message
@@ -12,7 +14,7 @@
     * **sense_body** message
 
 
-## Player and world state
+### Player and world state
 
 * Player state consists of:
   * Player position
@@ -24,7 +26,9 @@
   * Play mode
 
 
-## Starting and exiting player
+## Actions
+
+### Starting and exiting player
 
 * After starting the player will send **init** message and start accepting messages from server
 * When playMode == game_over send **bye** message and disconnect.
