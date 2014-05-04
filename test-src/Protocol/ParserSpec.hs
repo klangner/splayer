@@ -18,12 +18,21 @@ instance Arbitrary ServerMessage where
         s <- arbitrary
         n <- elements [1..11]
         m <- arbitrary
-        keys <- listOf1 $ listOf1 $ elements ['a'..'z']
-        values <- listOf1 $ listOf1 $ elements ['a'..'z']
+        keys <- listOf1 alphaString
+        values <- listOf1 alphaString
+        reason <- alphaString
         let params = zip keys values
+        sbm <- senseBodyGen
         elements [ InitMessage s n m
                  , PlayerParam params
-                 --, ServerParam params
-                 , Error "reason" ]    
+                 , ServerParam params
+                 , sbm
+                 , Error reason ]    
 
-        
+-- Create alphanumeric string
+alphaString = listOf1 $ elements ['a'..'z']        
+
+-- Sense body generator
+senseBodyGen = do
+    t <- elements [1..1000000]
+    return $ SenseBody t

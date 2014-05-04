@@ -15,9 +15,12 @@ module Protocol.Parser ( ServerMessage(..)
 import Text.ParserCombinators.Parsec
 import Model.Types
 
+type Time = Int
+
 data ServerMessage = InitMessage Side UniformNumber PlayMode
                    | ServerParam [(String, String)]
                    | PlayerParam [(String, String)]
+                   | SenseBody Time
                    | Error String
                    deriving (Eq)
                    
@@ -25,6 +28,7 @@ instance Show ServerMessage where
     show (InitMessage s unum mode) = "(init " ++ show s ++ " " ++ show unum ++ " " ++ show mode ++ ")" 
     show (ServerParam xs) = "(server_param " ++ showParams xs ++ ")"
     show (PlayerParam xs) = "(player_param " ++ showParams xs ++ ")"
+    show (SenseBody t) = "(sense_body " ++ show t ++ ")"
     show (Error msg) = "(error " ++ msg ++ ")" 
 
 -- Show params
@@ -44,14 +48,14 @@ parseMessage msg = case parse allParsers "" msg of
 allParsers :: Parser ServerMessage
 allParsers = do
     _ <- char '('
-    initMsg <|> serverParamMsg <|> playerParamMsg <|> errorMsg
+    initMsg <|> serverParamMsg <|> playerParamMsg <|> senseBodyMsg <|> errorMsg
          
                  
 -- Parser for init message:
 -- (init Side Unum PlayMode)
 initMsg :: Parser ServerMessage
 initMsg = do
-    _ <- string "init"
+    _ <- tryKeyword "init"
     _ <- space
     s <- side
     _ <- space
@@ -65,7 +69,7 @@ initMsg = do
 -- (server_param (ParameterName ParameterValue)*) 
 serverParamMsg :: Parser ServerMessage
 serverParamMsg = do
-    _ <- string "server_param"
+    _ <- tryKeyword "server_param"
     _ <- space
     ps <- many1 param
     return $ ServerParam ps
@@ -75,10 +79,46 @@ serverParamMsg = do
 -- (player_param (ParameterName ParameterValue)*) 
 playerParamMsg :: Parser ServerMessage
 playerParamMsg = do
-    _ <- string "player_param"
+    _ <- try (string "player_param")
     _ <- space
     ps <- many1 param
     return $ PlayerParam ps
+    
+    
+-- (sense_body Time
+--      (view_mode {high | low} {narrow | normal | wide})
+--      (stamina Stamina Effort StaminaCapacity)
+--      (speed AmountOfSpeed DirectionOfSpeed)
+--      (head_angle HeadAngle)
+--      (kick KickCount)
+--      (dash DashCount)
+--      (turn TurnCount)
+--      (say SayCount)
+--      (turn_neck TurnNeckCount)
+--      (catch CatchCount)
+--      (move MoveCount)
+--      (change_view ChangeViewCount)
+--      (arm 
+--          (movable ArmMovableCycles) 
+--          (expires ArmExpiresCycles) 
+--          (target ArmTargetDistance ArmTargetDirection) 
+--          (count PointtoCount))
+--      (focus 
+--          (target {none | l UniformNumber | r UniformNumber}) 
+--          (count AttentiontoCount))
+--      (tackle 
+--          (expires TackleExpiresCycles) 
+--          (count TackleCount))
+--      (collision {none | [(ball)] [(player)] [(post)]})
+--      (foul 
+--          (charged FoulChargedCycles) 
+--          (card {none | yellow | red}))    
+senseBodyMsg :: Parser ServerMessage
+senseBodyMsg = do
+    _ <- string "sense_body"
+    _ <- space
+    t <- number
+    return $ SenseBody t
 
 
 -- Parse error message    
@@ -89,6 +129,10 @@ errorMsg = do
     _ <- space
     reason <- text
     return $ Error reason    
+
+
+tryKeyword :: String -> Parser String
+tryKeyword k = try (string k)
 
     
 -- Parse player side
