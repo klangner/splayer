@@ -1,34 +1,38 @@
-# Specification version 0.1
+# Specification
 
 ## Data structures
 
 ### Model
 
-* Player model consists of:
-  * Team name
-  * Player position
-  * Uniform number
-  * Functions which process:
-    * **init** message
-    * **see** message
-    * **sense_body** message
+* **PlayerModel** consists of:
+  * team_name
+  * player_play_style
+  * uniform_number
 
 
 ### Player and world state
 
-* Player state consists of:
-  * Player position
-  * Player direction
+* **PlayerState** consists of:
+  * player_position
+  * player_direction
 
-* World state consist of
-  * Position of all players
-  * ball position
-  * Play mode
+* **WorldState** consist of
+  * players_position (Contains position of all players)
+  * ball_position
+  * play_mode
 
 
-## Actions
+## Behaviour
 
 ### Starting and exiting player
 
-* After starting the player will send **init** message and start accepting messages from server
+* After starting, the player will send **init** message and start accepting messages from server.
 * When playMode == game_over send **bye** message and disconnect.
+
+
+### Processing server messages
+
+* (init Side Unum PlayMode)
+  * update uniform_number in **PlayerModel**
+  * update play_mode in **WorldState**
+  * Send *move* command if play_mode == before_kick_off
