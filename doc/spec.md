@@ -2,21 +2,16 @@
 
 ## Data structures
 
-### Model
-
 * **PlayerModel** consists of:
   * team_name
   * player_play_style
   * uniform_number
 
-
-### Player and world state
-
 * **PlayerState** consists of:
   * player_position
   * player_direction
 
-* **WorldState** consist of
+* **WorldState** consist of:
   * players_position (Contains position of all players)
   * ball_position
   * play_mode
